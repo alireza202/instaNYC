@@ -1,0 +1,51 @@
+.leaflet-popup-content {
+    width:auto !important;
+}
+
+.modal {
+   role="dialog";
+}
+
+.header {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+    border-bottom: 1px solid #CCC;
+    box-shadow: 0 1px 5px rgba(0,0,0,.01);
+}  
+
+
+
+.ui-select {
+    background:#fff;
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:100;
+    padding:10px;
+    border-radius:3px;
+}
+
+.modal-dialog {
+    width: 560px;
+    max-height: 800px;
+}
+
+.modal-content {
+    /* 80% of window height */
+    height: 100%;
+}
+
+.modal-body {
+    /* 100% = dialog height, 120px = header + footer */
+    max-height: calc(100% - 120px);
+    overflow-y: scroll;
+}
+
+.drop-down {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 62.5%;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: "yellow"
+}

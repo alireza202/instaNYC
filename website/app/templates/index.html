@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=utf-8 />
+        <title>instaNYC!</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../static/css/mystyle.css" rel="stylesheet">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
+        <!-- Load c3.css -->
+        <!-- <link href="../static/c3/c3.css" rel="stylesheet" type="text/css"> -->
+        <link href="//cdnjs.cloudflare.com/ajax/libs/c3/0.1.29/c3.css" rel="stylesheet" type="text/css">
+
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.css' rel='stylesheet' />
+        
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/c3/0.1.29/c3.js"></script>
+        <script src="http://d3js.org/d3.v3.js"></script>
+
+        <style>
+            body { 
+                margin:0; 
+                padding:0; 
+                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+                font-size: 14px;
+                line-height: 1.42857143;
+                color: #333;
+            }
+
+            #map { 
+                position:absolute; 
+                top:50px; 
+                bottom:0; 
+                width:100%
+            }
+
+            .leftPane {
+                background-color: rgba(255,255,255,0.5);
+                border-radius: 2px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+                font-size: 16px;
+                line-height: 16px;
+                outline: none;
+                overflow: hidden;
+                position: absolute;
+                width: 125px;
+                z-index: 100;
+                height: 140px;
+                margin-top: 75px;
+                margin-left: 25px;
+                padding: 20px;
+            }
+
+            div.ui-datepicker{
+                font-size:16px;
+            }
+
+            .axis path,
+            .axis line {
+              fill: none;
+              stroke: #000;
+              shape-rendering: crispEdges;
+            }
+
+            .x.axis path {
+              display: none;
+            }
+
+            .line {
+              fill: none;
+              stroke: steelblue;
+              stroke-width: 1.5px;
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+        <div class="leftPane" style="line-height: 200%" >
+
+            <div><img class="legend_image" src="../static/icons/red_marker.png" height="20" width="15.5"/>
+            Hot</div>
+            <div><img class="legend_image" src="../static/icons/orange_marker.png" height="20" width="15.5"/>
+            Trending</div>
+            <div><img class="legend_image" src="../static/icons/blue_marker.png" height="20" width="15.5"/>
+            Calm</div>
+
+        </div>
+
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                <a class="navbar-brand" href="/">instaNYC!</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/slides">Slides</a></li>
+                    <li><a href="/about">About</a></li>
+                    </ul>
+                    <div class="col-sm-3 col-md-3 pull-right">
+                        <form class="navbar-form">
+                            <div class="input-group">
+                                <p><input type="text" class="form-control" name="datePicked" id="datepicker" placeholder="Enter a date" >
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onClick="searchDateFunction(this.form)">Go!</button>
+                                </div>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+
+        <!-- <div class="header"></div> -->
+
+        <div id='map'></div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel" style="text-align: center"></h4>
+              </div>
+              <div class="modal-body" id="myModalBody">
+                  <div id="chart"></div>
+                  <div><hr></div>
+                  <div id="myModalBodyImages"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- jQuery is required. -->
+        <script src='https://code.jquery.com/jquery-1.11.0.min.js'></script>
+        <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+        // <script type="text/javascript">
+        //     var myDate = new Date();
+        //     var prettyDate =(myDate.getMonth()+1) + '/' + myDate.getDate() + '/' + myDate.getFullYear();
+        //     $("#datepicker").val(prettyDate);
+        // </script>
+        
+        <script>
+            markerGenerator = function(records) {
+                markers = [];
+                $.each(records, function(index, value) { 
+                    // assigns a color to each marker based on their type
+                    if (value.event_type == 'Anomaly') {
+                        var theIcon = redIcon
+                    } else if (value.event_type == 'High') {
+                        var theIcon = orangeIcon
+                    } else {
+                        var theIcon = blueIcon
+                    }
+                    // console.log(value)
+                    var markerLocation = new L.LatLng(value.lat, value.lon); 
+                    var markerOptions = {icon: theIcon}; 
+                    var marker = new L.marker(markerLocation, markerOptions, {title: "marker"});
+                    marker.Urls = value.url;
+                    marker.Name = value.name;
+                    marker.t = value.t_h;
+                    marker.x = value.x_h;
+
+                    marker.on('click', function(e) { 
+                        // console.log(e.target.Urls)
+
+                        $('#myModalLabel').empty()
+                        $('#myModalLabel').append('<p>'+e.target.Name+'</p>')
+
+                        // d3 
+                        $('#myModalBodyChart').append('')
+                        
+
+                        var chart = c3.generate({
+                            size: {
+                                height: 240,
+                                width: 500
+                            },
+                            data: {
+                                x: 'x',
+                                // xFormat: '%Y-%m-%d %Hh', // 'xFormat' can be used as custom format of 'x'
+                                columns: [
+                                    ['x'].concat(e.target.t),
+                                    ['Date'].concat(e.target.x)
+                                ],
+                                type: 'spline'
+                            },
+                            point: {
+                                    show: false
+                            },
+                            legend: {
+                                show: false
+                            },
+                            transition: {
+                                duration: 2000
+                            },
+                            axis: {
+                                x: {
+                                    type: 'timeseries',
+                                    tick: {
+                                        // rotate: -70,
+                                        // multiline: false,
+                                        count: 6,
+                                        format: '%m-%d/%Hh'
+                                    }
+                                    // height: 130
+                                }
+                            }
+                        });
+
+                        // setTimeout(function () {
+                        //     chart.load({
+                        //         columns: [
+                        //             ['data3', 400, 500, 450, 700, 600, 500]
+                        //         ]
+                        //     });
+                        // }, 1000);
+                        // $('#chart').append('<p></p>')
+                        
+
+                        $('#myModalBodyImages').empty()
+                        for (i=0; i < e.target.Urls.length; i++) {
+                            $('#myModalBodyImages').append('<img src='+e.target.Urls[i]+' hspace="10" vspace="10" align="middle">')
+                        }
+                        $('#myModal').modal('show');
+                    });
+                    markers.push(marker);
+                });
+                return markers;
+            };
+        </script>
+
+        <script>
+            L.mapbox.accessToken = 'pk.eyJ1IjoiYWxpcmV6YTIwMiIsImEiOiJtZkVyNWlNIn0.mB6zSMRRAX0Cy80YVQpa9g';
+            var map = L.mapbox.map('map', 'examples.map-i86nkdio', { zoomControl:false })
+                .setView([40.742241, -73.98895], 13);
+
+            var redIcon = L.icon({
+                iconUrl: '../static/icons/red_marker.png',
+                iconSize:     [20, 26], // size of the icon
+                iconAnchor:   [10, 26], // point of the icon which will correspond to marker's location
+            });
+
+            var blueIcon = L.icon({
+                iconUrl: '../static/icons/blue_marker.png',
+                iconSize:     [20, 26], // size of the icon
+                iconAnchor:   [10, 26], // point of the icon which will correspond to marker's location
+            });
+
+            var orangeIcon = L.icon({
+                iconUrl: '../static/icons/orange_marker.png',
+                iconSize:     [20, 26], // size of the icon
+                iconAnchor:   [10, 26], // point of the icon which will correspond to marker's location
+            });
+            
+            var groupToday = [];
+            var groupPast = [];
+
+            markers = markerGenerator({{ records|safe }})
+            var groupToday = new L.FeatureGroup(markers); 
+            map.addLayer(groupToday);
+
+        </script>
+
+        <script type=text/javascript>
+        $(function() {
+          $('#go').bind('click', function() {
+            $.getJSON('/_query', {
+              given_date: $('').val(),
+            }, function(data) {
+              $("#result").text(data.result);
+            });
+            return false;
+          });
+        });
+        </script>
+
+        <script>
+            $(function() {
+            $( "#datepicker" ).datepicker();
+            });
+        </script>
+
+        <script>
+            function searchDateFunction(frm){
+                if (frm.datePicked.value == "") {
+                    alert("You didn't enter anything!")
+                }
+                else {
+                    // get data from a given date from Flask
+                    $.getJSON("/_query", {given_date: frm.datePicked.value}, function(result) {
+                        $.each(result, function(i, field){
+                            if (typeof field == "string" & field != "today") {
+                                // if an invalid date is selected
+                                alert(field);
+                            } else if (field == "today") {
+                                if (typeof groupPast != 'undefined') {
+                                    map.removeLayer(groupPast);
+                                    map.addLayer(groupToday);
+                                }
+                            } else {
+                                markers = markerGenerator(field)
+                                if (typeof groupPast != 'undefined') {
+                                    map.removeLayer(groupPast);
+                                }
+                                groupPast = new L.FeatureGroup(markers); 
+                                map.removeLayer(groupToday);
+                                map.addLayer(groupPast);
+                            }
+                        });
+                    });
+                }
+            }
+        </script>
+        <script type="text/javascript">
+        $('#myModal').on('click' , function() { 
+            $('.modal').modal('hide')
+            });
+        </script>
+        <script src='../static/js/bootstrap.js'></script>
+        // <script type="text/javascript">
+        //     var margin = {top: 20, right: 20, bottom: 20, left: 20},
+        //         width = 450 - margin.left - margin.right,
+        //         height = 300 - margin.top - margin.bottom;
+
+        //     var parseDate = d3.time.format("%d-%b-%y").parse;
+
+        //     var x = d3.time.scale()
+        //         .range([0, width]);
+
+        //     var y = d3.scale.linear()
+        //         .range([height, 0]);
+
+        //     var xAxis = d3.svg.axis()
+        //         .scale(x)
+        //         .orient("bottom");
+
+        //     var yAxis = d3.svg.axis()
+        //         .scale(y)
+        //         .orient("left");
+
+        //     var line = d3.svg.line()
+        //         .x(function(d) { return x(d.date); })
+        //         .y(function(d) { return y(d.close); });
+
+        //     var svg = d3.select("body").append("svg")
+        //         .attr("width", width + margin.left + margin.right)
+        //         .attr("height", height + margin.top + margin.bottom)
+        //       .append("g")
+        //         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        //     d3.tsv("../static/data.csv", function(error, data) {
+        //       data.forEach(function(d) {
+        //         d.date = parseDate(d.date);
+        //         d.close = +d.close;
+        //       });
+
+        //       x.domain(d3.extent(data, function(d) { return d.date; }));
+        //       y.domain(d3.extent(data, function(d) { return d.close; }));
+
+        //       svg.append("g")
+        //           .attr("class", "x axis")
+        //           .attr("transform", "translate(0," + height + ")")
+        //           .call(xAxis);
+
+        //       svg.append("g")
+        //           .attr("class", "y axis")
+        //           .call(yAxis)
+        //         .append("text")
+        //           .attr("transform", "rotate(-90)")
+        //           .attr("y", 6)
+        //           .attr("dy", ".71em")
+        //           .style("text-anchor", "end")
+        //           .text("Price ($)");
+
+        //       svg.append("path")
+        //           .datum(data)
+        //           .attr("class", "line")
+        //           .attr("d", line);
+        //     });
+        // </script>
+    </body>
+</html>
