@@ -54,7 +54,7 @@ counts = counts.set_index('loc_id')['counts'].to_dict()
 Now = Now.replace(minute=0, second=0, microsecond=0)
 
 # write to database
-db = mdb.connect('localhost', 'root', '', 'instagram')
+# db = mdb.connect('localhost', 'root', '', 'instagram')
 for key, value in counts.iteritems():
     cur = db.cursor()
     cur.execute('INSERT IGNORE INTO hourly_counts (date_time, loc_id, counts) \
