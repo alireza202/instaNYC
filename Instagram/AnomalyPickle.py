@@ -73,6 +73,6 @@ for id in popped:
     marker.pop(id, None)
 
 # pickling the files
-filename = 'anomalies_' + given_date + '.pkl'
+filename = '/home/ubuntu/instaNYC/website/app/static/pickles/' + 'anomalies_' + given_date + '.pkl'
 with open(filename, 'wb') as handle:
   pickle.dump(marker, handle)
