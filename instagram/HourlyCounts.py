@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pymysql as mdb
 from datetime import datetime, timedelta, time
+import pickle
 
 midnight = time(0, 0, 0)
 morning = time(8, 59, 0)
