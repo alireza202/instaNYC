@@ -20,7 +20,10 @@ class MyEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, obj)
 
-db = mdb.connect(user="root", password="mypassword", host="instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com", db="instagramdb", charset='utf8')
+with open('../../db.pkl', 'rb') as handle:
+  db_info = pickle.load(handle)
+
+db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
 
 @app.route('/')
 @app.route('/index')

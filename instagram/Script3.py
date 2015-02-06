@@ -13,7 +13,7 @@ if not os.path.exists('logs'):
 
 try:
     import pymysql as mdb
-    con = mdb.connect('instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com', 'root', 'mypassword', 'instagramdb')
+    db = mdb.connect('instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com', 'root', 'mypassword', 'instagramdb')
 except:
     log = open('logs/log_s3_' + now, 'a')
     log.write("Could not open the database.")
@@ -33,7 +33,7 @@ time_end = time_end.strftime('%Y-%m-%d %H:%M:%S')
 
 # read the last hour data from server
 try:
-    df = pd.read_sql('SELECT id, loc_id, time, user, thumbnail_url FROM nyc_data WHERE time >= "%s" AND time < "%s"' % (time_start, time_end), con)
+    df = pd.read_sql('SELECT id, loc_id, time, user, thumbnail_url FROM nyc_data WHERE time >= "%s" AND time < "%s"' % (time_start, time_end), db)
 except:
     log = open('logs/log_s3_' + now, 'a')
     log.write("Could not read df from server.")
@@ -45,7 +45,7 @@ except:
 df['time'] = df['time'].apply(lambda x: x - timedelta(hours=5))
 
 try:
-    loc_info = pd.read_sql("SELECT * FROM top_places_nyc", con)
+    loc_info = pd.read_sql("SELECT * FROM top_places_nyc", db)
     loc_info.columns = ['loc_id', 'loc_name', 'loc_lat', 'loc_lon', 'ID']
 except:
     log = open('logs/log_s3_' + now, 'a')
@@ -83,7 +83,7 @@ counts.columns = ['loc_id', 'counts']
 try:
     todayET = datetime.today() - timedelta(hours=5)
     todayET = todayET.date()
-    quartiles = pd.read_sql('SELECT loc_id, med, q25, q75, anomaly FROM quartiles WHERE DATE(date)= "%s"' % todayET, con)
+    quartiles = pd.read_sql('SELECT loc_id, med, q25, q75, anomaly FROM quartiles WHERE DATE(date)= "%s"' % todayET, db)
 except:
     log = open('logs/log_s3_' + now, 'a')
     log.write("Could not read quartiles from server.")
@@ -117,11 +117,10 @@ for id in results.index:
         events[id] = ('High', results.loc[id, 'counts'], results.loc[id, 'med'], results.loc[id, 'anomaly'])
 
 # writing the results to database
-# con = mdb.connect('localhost', 'root', '', 'instagram')
 try:
     Now = datetime.utcnow() - timedelta(hours=5)
-    with con:
-        cur = con.cursor()
+    with db:
+        cur = db.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS events(\
             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
             date_time DATETIME NOT NULL,\
@@ -133,7 +132,7 @@ try:
             ENGINE=MyISAM DEFAULT CHARSET=utf8")
         
         for key, value in events.iteritems():
-            cur = con.cursor()
+            cur = db.cursor()
             cur.execute('INSERT IGNORE INTO events \
                         (date_time, loc_id, type, counts, med, mad) \
                         VALUES ("%s", "%s", "%s", "%s", "%s", "%s");' % \

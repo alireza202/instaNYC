@@ -25,8 +25,13 @@ else:
 import pymysql as mdb
 
 try:
-    # con = mdb.connect('localhost', 'root', '', 'instagram')
-    con = mdb.connect('instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com', 'root', 'mypassword', 'instagramdb')
+    # read database info
+
+    with open('../db.pkl', 'rb') as handle:
+      db_info = pickle.load(handle)
+
+    db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
+    
 except:
     log = open('logs/log_' + now, 'a')
     log.write("Could not open the database.")
@@ -35,8 +40,8 @@ except:
     sys.exit()
 
 try:
-    with con:
-        cur = con.cursor()
+    with db:
+        cur = db.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS nyc_data(\
             id VARCHAR(40) PRIMARY KEY,\
             time DATETIME NOT NULL,\
@@ -139,8 +144,8 @@ except:
     sys.exit()
 
 try:
-    with con:
-        loc_info = pd.read_sql("SELECT loc_id FROM top_places_nyc", con)
+    with db:
+        loc_info = pd.read_sql("SELECT loc_id FROM top_places_nyc", db)
         loc_info = loc_info['loc_id'].tolist()
 except:
     log = open('logs/log_' + now, 'a')
@@ -168,8 +173,8 @@ except:
 
 try:
     for l in map(list, df.values):
-        with con:
-            cur = con.cursor()
+        with db:
+            cur = db.cursor()
             cur.execute('INSERT IGNORE INTO nyc_data \
                         (id, time, loc_id, lat, lon, tags, likes, type, user, filter, thumbnail_url, standard_url) \
                         VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' % tuple(l))
@@ -180,4 +185,4 @@ except:
     log.close()
     sys.exit()
                 
-con.close()
+db.close()

@@ -5,6 +5,7 @@ import time
 import pandas as pd
 import numpy as np
 import sys
+import pymysql as mdb
 from datetime import datetime, timedelta, time
 
 def noZero(x):
@@ -16,8 +17,12 @@ if not os.path.exists('logs'):
     os.makedirs('logs')
 
 try:
-    import pymysql as mdb
-    con = mdb.connect('instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com', 'root', 'mypassword', 'instagramdb')
+    # read database info
+
+    with open('../db.pkl', 'rb') as handle:
+      db_info = pickle.load(handle)
+
+    db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
 except:
     log = open('logs/log_s2_' + now, 'a')
     log.write("Could not open the database.")
@@ -38,7 +43,7 @@ time_end = time_end.strftime('%Y-%m-%d %H:%M:%S')
 # reading in the last 7 days of data from server
 try:
     df = pd.read_sql('SELECT id, loc_id, time, user \
-                    FROM nyc_data WHERE time >= "%s" AND time < "%s"' % (time_start, time_end), con)
+                    FROM nyc_data WHERE time >= "%s" AND time < "%s"' % (time_start, time_end), db)
 except:
     log = open('logs/log_s2_' + now, 'a')
     log.write("Could not read df from database.")
@@ -51,7 +56,7 @@ df['time'] = df['time'].apply(lambda x: x - timedelta(hours=5))
 
 # reading in the location info of the top 100 aggregated locations
 try:
-    loc_info = pd.read_sql("SELECT * FROM top_places_nyc", con)
+    loc_info = pd.read_sql("SELECT * FROM top_places_nyc", db)
     loc_info.columns = ['loc_id', 'loc_name', 'loc_lat', 'loc_lon', 'ID']
 except:
     log = open('logs/log_s2_' + now, 'a')
@@ -142,10 +147,10 @@ for id in IDs:
 
 
 # writing the results to database
-# con = mdb.connect('localhost', 'root', '', 'instagram')
+# db = mdb.connect('localhost', 'root', '', 'instagram')
 try:
-    with con:
-        cur = con.cursor()
+    with db:
+        cur = db.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS quartiles(\
                     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
                     date DATETIME NOT NULL,\
@@ -157,7 +162,7 @@ try:
                     ENGINE=MyISAM DEFAULT CHARSET=utf8")
         
         for id in IDs:
-            cur = con.cursor()
+            cur = db.cursor()
             cur.execute('INSERT IGNORE INTO quartiles(date, loc_id, med, q25, q75, anomaly) \
                         VALUES ("%s", "%s", "%s", "%s", "%s", "%s");' % \
                         (datetime.now().date(), id, results.loc[id, 'med'], results.loc[id, 'q25'], results.loc[id, 'q75'], results.loc[id, 'anomaly']))

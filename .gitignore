@@ -5,3 +5,5 @@ tmps/
 alireza202.pem
 notes.txt
 website/app/static/pickles/
+db.pkl
+.ipynb_checkpoints/

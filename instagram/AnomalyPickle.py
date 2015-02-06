@@ -7,7 +7,12 @@ import pickle
 import pandas as pd
 import re
 
-db = mdb.connect(user="root", password="mypassword", host="instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com", db="instagramdb", charset='utf8')
+# read database info
+
+with open('../db.pkl', 'rb') as handle:
+  db_info = pickle.load(handle)
+
+db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
 
 # get yesterday's date
 time.sleep(5)
