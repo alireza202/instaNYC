@@ -7,6 +7,7 @@ import numpy as np
 import sys
 import pymysql as mdb
 from datetime import datetime, timedelta, time
+import pickle
 
 def noZero(x):
     return filter(lambda a: a != 0, x)

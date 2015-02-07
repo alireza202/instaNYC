@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, time
 import pymysql as mdb
+import pickle
 
 now = datetime.utcnow() - timedelta(hours=5)
 now = now.strftime("%Y-%m-%d_%H-%M-%S")

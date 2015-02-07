@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import pickle
 
 # for logging
 from time import gmtime, strftime
