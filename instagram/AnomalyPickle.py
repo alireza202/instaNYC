@@ -9,7 +9,7 @@ import re
 
 # read database info
 
-with open('../db.pkl', 'rb') as handle:
+with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
   db_info = pickle.load(handle)
 
 db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')

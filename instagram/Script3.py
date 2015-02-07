@@ -5,6 +5,7 @@ import time
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, time
+import pymysql as mdb
 
 now = datetime.utcnow() - timedelta(hours=5)
 now = now.strftime("%Y-%m-%d_%H-%M-%S")
@@ -12,8 +13,12 @@ if not os.path.exists('logs'):
     os.makedirs('logs')
 
 try:
-    import pymysql as mdb
-    db = mdb.connect('instagram.cyhrulrbvwbq.us-east-1.rds.amazonaws.com', 'root', 'mypassword', 'instagramdb')
+    # read database info
+
+    with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
+      db_info = pickle.load(handle)
+
+    db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
 except:
     log = open('logs/log_s3_' + now, 'a')
     log.write("Could not open the database.")
