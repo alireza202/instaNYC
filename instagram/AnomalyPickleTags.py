@@ -131,7 +131,10 @@ for ID in events:
     
     hashtags = []
     for hashtag in top_tags_anomaly:
-        p_val = hashtag_tester(hashtag, anomaly, all_tags)
+        try:
+          p_val = hashtag_tester(hashtag, anomaly, all_tags)
+        except:
+          p_val = 1
         if p_val < 0.05 and hashtag:
             hashtags.append((hashtag, p_val))
             
