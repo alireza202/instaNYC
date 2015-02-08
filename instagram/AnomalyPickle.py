@@ -32,7 +32,7 @@ df = df.sort(['loc_id', 'date_time'])
 # getting the first and last time point for all loc_ids
 first = df.groupby('loc_id').first()
 last = df.groupby('loc_id').last()
-df = first.append(last).reset_index().sort('loc_id')
+df = first.append(last).reset_index()
 
 # time should be converted to UTC, and extended to one hour before
 events = {}

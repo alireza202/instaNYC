@@ -138,6 +138,7 @@
                 <h4 class="modal-title" id="myModalLabel" style="text-align: center"></h4>
               </div>
               <div class="modal-body" id="myModalBody">
+                  <div id="hashtags"></div>
                   <div id="chart"></div>
                   <div><hr></div>
                   <div id="myModalBodyImages"></div>
@@ -175,12 +176,26 @@
                     marker.Name = value.name;
                     marker.t = value.t_h;
                     marker.x = value.x_h;
+                    marker.tags = value.hashtags;
+                    marker.daterange = value.daterange;
+
+                    // console.log(marker.daterange)
 
                     marker.on('click', function(e) { 
                         // console.log(e.target.Urls)
 
                         $('#myModalLabel').empty()
                         $('#myModalLabel').append('<p>'+e.target.Name+'</p>')
+
+                        if (e.target.tags == 'empty') {
+                            $('#hashtags').empty()
+                        } else {
+                            $('#hashtags').empty()
+                            var conv_tags = e.target.tags.join('%20OR%20%23');
+                            var show_hashtags = e.target.tags.join(', #');
+                            show_hashtags = '#'.concat(show_hashtags);
+                            $('#hashtags').append('<p><b>Hashtags</b>: <a href="http://twitter.com/search?q=%23' + conv_tags + '%20near%3A%22Manhattan%2C%20NY%22%20within%3A15mi%20since%3A' + e.target.daterange[0] + '%20until%3A' + e.target.daterange[1] + '" target="_blank">' + show_hashtags + '</a></p>')
+                        }
 
                         // d3 
                         $('#myModalBodyChart').append('')
@@ -222,15 +237,6 @@
                                 }
                             }
                         });
-
-                        // setTimeout(function () {
-                        //     chart.load({
-                        //         columns: [
-                        //             ['data3', 400, 500, 450, 700, 600, 500]
-                        //         ]
-                        //     });
-                        // }, 1000);
-                        // $('#chart').append('<p></p>')
                         
 
                         $('#myModalBodyImages').empty()

@@ -20,6 +20,7 @@ class MyEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, obj)
 
+# with open('../db.pkl', 'rb') as handle:
 with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
   db_info = pickle.load(handle)
 
@@ -56,7 +57,8 @@ def index():
                      'event_type': event_type, 'name': re.sub('[.!,;]', '', results_2[0][2].encode("ascii")),\
                      'url': [x[0] for x in results_3][:18],\
                      't_h': [x[0].strftime("%Y-%m-%d %H:%M:%S") for x in results_4],\
-                     'x_h': [x[1] for x in results_4]}
+                     'x_h': [x[1] for x in results_4],\
+                     'hashtags': 'empty'}
 
 
     return render_template("index.html", records=json.dumps(marker))
