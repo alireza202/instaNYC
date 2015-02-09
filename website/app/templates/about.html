@@ -19,7 +19,8 @@
                 font-size: 14px;
                 line-height: 1.42857143;
                 /*background-color: #FFFFFF;*/
-                background-color: #848484;
+                background-color: #E6E6E6;
+                padding-top: 120px;
             }
 
             .slide {
@@ -31,14 +32,11 @@
 				padding: 0;
 			    /*margin: 0;*/
 			}
-			/*.iframe{
-				width: 200px;
-			}*/
 
-			/*.slide {
-            	text-align: "center";
-            	width:100%;
-            }*/
+            .body_text {
+                margin-left: 100px;
+                margin-right: 100px;
+            }
 
         </style>
     </head>
@@ -64,8 +62,36 @@
             </div>
         </nav>
 
-        
-        
+        <div class="wrapper">
+            <div class="container">
+                <div class="body_text">
+                    <p>
+                        <strong><font size="4">instaNYC</font></strong> tells you what is happening in New York City right now using Instagtam uploads. It compares every location to its own past, and determines if that location is seeing more/less uploads than usual. It is very good at finding events such as games, shows, concerts, clubs, and similar events, as they are happening!
+                    </p>
+                    <br>
+                    <p>
+                        You can also <strong>go back in time</strong>, and check what events were happening in the past. Make sure to check that out!
+                    </p>
+                    <br>
+                    <p>
+                        There are three types of markers on the map:<br>
+
+                        <ul>
+                            <li><span style="color:blue;">Calm</span>: Less uploads than the 1st quartile of the hourly uploads of the last 5 days. </li>
+                            <li><span style="color:orange;">Trending</span>: More uploads than the 3rd quartile of the hourly uploads of the last 5 days. </li>
+                            <li><span style="color:red;">Hot</span>: Outlier! More uploads than the 1.5*IQR over the 3rd quartile of the hourly uploads of the last 5 days.</li>
+                        </ul>
+                    </p>
+
+                    <br>
+
+                    <h3>About me</h3>
+                    <p>
+                        I'm currently a fellow at Insight Data Science, and I am actively looking for Data Science jobs. Check out my profile at <a href="http://www.linkedin.com/in/aliroshanghias">LinkedIn</a>!
+                    </p>
+                </div>
+            </div>
+        </div>        
 
         <script src='https://code.jquery.com/jquery-1.11.0.min.js'></script>
         <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
