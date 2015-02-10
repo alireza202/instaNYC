@@ -145,6 +145,8 @@ for id in IDs:
     results.loc[id, 'anomaly'] = np.ceil(np.percentile(x, 75) + 1.5 * (np.floor(np.percentile(x, 75)) - np.floor(np.percentile(x, 25))))
     if results.loc[id, 'anomaly'] < 10:
         results.loc[id, 'anomaly'] = 10
+    if results.loc[id, 'q75'] < 5:
+        results.loc[id, 'q75'] = 5
 
 
 # writing the results to database
