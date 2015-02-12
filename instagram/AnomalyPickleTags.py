@@ -79,6 +79,15 @@ df = pd.read_sql('SELECT date_time, loc_id FROM events WHERE DATE(date_time) = "
 
 # only cases that have more than half hour of anomaly
 a = df.groupby('loc_id').apply(lambda g: len(g)>1)
+
+# check if df is empty
+if df.shape[0] != 0:
+  filename = '/home/ubuntu/instaNYC/website/app/static/pickles/' + 'anomalies_' + given_date + '.pkl'
+  with open(filename, 'wb') as handle:
+    pickle.dump('empty', handle)
+  sys.exit()
+
+
 ids = a[a == True].index.tolist()
 df = df[df['loc_id'].isin(ids)]
 df = df.sort(['loc_id', 'date_time'])
