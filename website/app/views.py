@@ -74,7 +74,7 @@ def _query():
     elif given_date < datetime(2015, 1, 27).date():
         marker = "Please choose a date after Jan 27, 2015."
     elif given_date > (datetime.utcnow() - timedelta(hours=5)).date():
-        marker = "Anomaly detection in future is not implemented yet!"
+        marker = "No prediction for the future events yet!"
     else:
         print os.getcwd()
         filename = 'anomalies_' + given_date.strftime("%Y-%m-%d") + '.pkl'

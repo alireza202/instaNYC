@@ -179,10 +179,10 @@
                     marker.tags = value.hashtags;
                     marker.daterange = value.daterange;
 
-                    // console.log(marker.daterange)
+                    // console.log(marker.tags)
 
                     marker.on('click', function(e) { 
-                        // console.log(e.target.Urls)
+                        // console.log(e.target.tags)
 
                         $('#myModalLabel').empty()
                         $('#myModalLabel').append('<p>'+e.target.Name+'</p>')

@@ -81,7 +81,7 @@ df = pd.read_sql('SELECT date_time, loc_id FROM events WHERE DATE(date_time) = "
 a = df.groupby('loc_id').apply(lambda g: len(g)>1)
 
 # check if df is empty
-if df.shape[0] != 0:
+if df.shape[0] == 0:
   filename = '/home/ubuntu/instaNYC/website/app/static/pickles/' + 'anomalies_' + given_date + '.pkl'
   with open(filename, 'wb') as handle:
     pickle.dump('empty', handle)
