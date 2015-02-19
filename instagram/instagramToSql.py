@@ -67,10 +67,12 @@ except:
 from instagram.client import InstagramAPI
 
 try:
-    INSTAGRAM_CLIENT_ID = '61712f4e787b4897a05fafb4bb53094c'
-    INSTAGRAM_CLIENT_SECRET = 'db556d55cdb0467da293089b8083fab0'
-    api = InstagramAPI(client_id=INSTAGRAM_CLIENT_ID,
-                       client_secret=INSTAGRAM_CLIENT_SECRET)
+    with open('/home/ubuntu/instaNYC/instagram.pkl', 'rb') as handle:
+    # with open('../instagram.pkl', 'rb') as handle:
+      instagram_client = pickle.load(handle) 
+
+    api = InstagramAPI(client_id=instagram_client['id'],
+                       client_secret=instagram_client['secret'])
 except:
     log = open('logs/log_' + now, 'a')
     log.write("Instagram API could not be defined.")
