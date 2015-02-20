@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
 import pymysql as mdb
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from datetime import datetime, timedelta, time
 import pandas as pd
 import numpy as np
 import pickle
+
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 
 # read database info
 
