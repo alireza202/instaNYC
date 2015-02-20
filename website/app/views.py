@@ -1,7 +1,7 @@
 import sys, logging
 logging.basicConfig(stream = sys.stderr)
 
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, make_response
 from app import app
 from datetime import datetime, timedelta
 import pymysql as mdb
@@ -91,3 +91,15 @@ def slides():
 @app.route('/about')
 def about():
     return render_template("about.html")
+
+@app.route('/monitor')
+def monitor():
+    return render_template("monitor.html")
+
+
+@app.route('/<path:filename>')
+
+def return_image(filename):
+    response = make_response(app.send_static_file(filename))
+    response.cache_control.max_age = 0
+    return response
