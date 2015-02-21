@@ -28,8 +28,7 @@ import pymysql as mdb
 try:
     # read database info
 
-    # with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
-    with open('/Users/alireza/Dropbox/Data_science/Insight/Project/db.pkl', 'rb') as handle:
+    with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
       db_info = pickle.load(handle)
 
     db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
@@ -68,8 +67,7 @@ except:
 from instagram.client import InstagramAPI
 
 try:
-    # with open('/home/ubuntu/instaNYC/instagram.pkl', 'rb') as handle:
-    with open('/Users/alireza/Dropbox/Data_science/Insight/Project/instagram.pkl', 'rb') as handle:
+    with open('/home/ubuntu/instaNYC/instagram.pkl', 'rb') as handle:
       instagram_client = pickle.load(handle) 
 
     api = InstagramAPI(client_id=instagram_client['id'],
