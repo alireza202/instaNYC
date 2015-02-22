@@ -137,16 +137,24 @@ except:
 # finding median, quartiles, and outlier thresholds
 results = pd.DataFrame(0, index = IDs, columns = ['med', 'q25', 'q75', 'anomaly'])
 
+empty_ids = []
 for id in IDs:    
     x = noZero(binned[id])
-    results.loc[id, 'med'] = np.ceil(np.median(x))
-    results.loc[id, 'q25'] = np.floor(np.percentile(x, 25))
-    results.loc[id, 'q75'] = np.ceil(np.percentile(x, 75))
-    results.loc[id, 'anomaly'] = np.ceil(np.percentile(x, 75) + 1.5 * (np.floor(np.percentile(x, 75)) - np.floor(np.percentile(x, 25))))
-    if results.loc[id, 'anomaly'] < 10:
-        results.loc[id, 'anomaly'] = 10
-    if results.loc[id, 'q75'] < 5:
-        results.loc[id, 'q75'] = 5
+    if x:
+        results.loc[id, 'med'] = np.ceil(np.median(x))
+        results.loc[id, 'q25'] = np.floor(np.percentile(x, 25))
+        results.loc[id, 'q75'] = np.ceil(np.percentile(x, 75))
+        results.loc[id, 'anomaly'] = np.ceil(np.percentile(x, 75) + 1.5 * (np.floor(np.percentile(x, 75)) - np.floor(np.percentile(x, 25))))
+        if results.loc[id, 'anomaly'] < 10:
+            results.loc[id, 'anomaly'] = 10
+        if results.loc[id, 'q75'] < 5:
+            results.loc[id, 'q75'] = 5
+    else:
+        empty_ids.append(id)
+
+# remove the IDs that do not have any photos
+for id in empty_ids:
+    IDs.remove(id)
 
 
 # writing the results to database
