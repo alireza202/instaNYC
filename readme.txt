@@ -1,1 +1,1 @@
-instaNYC.com let's you find out about the live events in NYC using Instagram photo uploads.
+instaNYC.com let's you find out about the live events in NYC using Instagram photo uploads. You can also go back in time, and check what has happened at any given day in the city!
