@@ -35,5 +35,5 @@ df['thedate'] = df['thedate'].apply(lambda x: x.strftime('%d %b'))
 ax = df.plot(x='thedate', y='counts', rot = 45, legend = False)
 
 fig = ax.get_figure()
-fig.savefig('../website/app/static/monitor/monitor.png')
+fig.savefig('/home/ubuntu/instaNYC/website/app/static/monitor/monitor.png')
 
