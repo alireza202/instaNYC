@@ -12,6 +12,8 @@ import pickle
 def noZero(x):
     return filter(lambda a: a != 0, x)
 
+# utc - est
+dst = 4
 
 now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 if not os.path.exists('logs'):
@@ -35,8 +37,8 @@ except:
 # time_start is 7 days before at 14:00 UTC, which is 9:00 ET
 # time_end is the same day at 4:59 UTC, which is 23:59 ET the previous day
 num_days = 7
-time_start = datetime.combine(datetime.today().date() - timedelta(days=num_days), time(14, 0))
-time_end = datetime.combine(datetime.today().date(), time(4, 59))
+time_start = datetime.combine(datetime.today().date() - timedelta(days=num_days), time(dst+9, 0))
+time_end = datetime.combine(datetime.today().date(), time(dst-1, 59))
 
 time_start = time_start.strftime('%Y-%m-%d %H:%M:%S')
 time_end = time_end.strftime('%Y-%m-%d %H:%M:%S')
@@ -53,7 +55,7 @@ except:
     sys.exit()
 
 # convert UTC to ET
-df['time'] = df['time'].apply(lambda x: x - timedelta(hours=5))
+df['time'] = df['time'].apply(lambda x: x - timedelta(hours=dst))
 
 # reading in the location info of the top 100 aggregated locations
 try:

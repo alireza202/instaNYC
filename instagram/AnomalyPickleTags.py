@@ -63,6 +63,8 @@ with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
 db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
 cur = db.cursor()
 
+# utc - est
+dst = 4
 
 time.sleep(5)
 
@@ -70,7 +72,7 @@ try:
   given_date = sys.argv[1]
 except:
   # get yesterday's date
-  given_date = (datetime.utcnow() - timedelta(hours=5) - timedelta(days=1)).date().strftime('%Y-%m-%d')
+  given_date = (datetime.utcnow() - timedelta(hours=dst) - timedelta(days=1)).date().strftime('%Y-%m-%d')
 
 date_start = (datetime.strptime(given_date, '%Y-%m-%d') - timedelta(days=6)).date().strftime('%Y-%m-%d')
 
@@ -102,8 +104,8 @@ events = {}
 
 for id in ids:
     duration = df[df.loc_id == id]['date_time'].tolist()
-    duration[0] = duration[0] + timedelta(hours=4)
-    duration[1] = duration[1] + timedelta(hours=5)
+    duration[0] = duration[0] + timedelta(hours=dst-1)
+    duration[1] = duration[1] + timedelta(hours=dst)
     events[id] = [x.strftime('%Y-%m-%d %H:%M:%S') for x in duration]
 
 # defining the day by UTC time

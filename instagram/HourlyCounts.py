@@ -22,6 +22,8 @@ with open('/home/ubuntu/instaNYC/db.pkl', 'rb') as handle:
 
 db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_info["host"], db=db_info["database"], charset='utf8')
 
+# utc - est
+dst = 4
 
 time_start = datetime.utcnow() - timedelta(hours=1)
 time_end = datetime.utcnow()
@@ -33,7 +35,7 @@ time_end = time_end.strftime('%Y-%m-%d %H:%M:%S')
 df = pd.read_sql('SELECT id, loc_id, time, user FROM nyc_data WHERE time >= "%s" AND time < "%s"' % (time_start, time_end), db)
 
 # convert UTC to ET
-df['time'] = df['time'].apply(lambda x: x - timedelta(hours=5))
+df['time'] = df['time'].apply(lambda x: x - timedelta(hours=dst))
 
 loc_info = pd.read_sql("SELECT * FROM top_places_nyc", db)
 loc_info.columns = ['loc_id', 'loc_name', 'loc_lat', 'loc_lon', 'ID']

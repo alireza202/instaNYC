@@ -31,6 +31,9 @@ except:
 # time_start is 1 hour before
 # time_end is now
 
+# utc - est
+dst = 4
+
 time_start = datetime.utcnow() - timedelta(hours=1)
 time_end = datetime.utcnow()
 
@@ -48,7 +51,7 @@ except:
     sys.exit()
 
 # convert UTC to ET
-df['time'] = df['time'].apply(lambda x: x - timedelta(hours=5))
+df['time'] = df['time'].apply(lambda x: x - timedelta(hours=dst))
 
 try:
     loc_info = pd.read_sql("SELECT * FROM top_places_nyc", db)
@@ -87,7 +90,7 @@ counts.columns = ['loc_id', 'counts']
 
 # read the quartiles from last 5 days
 try:
-    todayET = datetime.today() - timedelta(hours=5)
+    todayET = datetime.today() - timedelta(hours=dst)
     todayET = todayET.date()
     quartiles = pd.read_sql('SELECT loc_id, med, q25, q75, anomaly FROM quartiles WHERE DATE(date)= "%s"' % todayET, db)
 except:
@@ -124,7 +127,7 @@ for id in results.index:
 
 # writing the results to database
 try:
-    Now = datetime.utcnow() - timedelta(hours=5)
+    Now = datetime.utcnow() - timedelta(hours=dst)
     with db:
         cur = db.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS events(\
