@@ -12,6 +12,9 @@ import numpy as np
 from time import mktime
 import pickle
 
+# utc to etc
+dst = 4
+
 class MyEncoder(json.JSONEncoder):
 
     def default(self, obj):
@@ -31,9 +34,9 @@ db = mdb.connect(user=db_info["user"], password=db_info["password"], host=db_inf
 def index():
     hours_to_show = 2
 
-    date_start = (datetime.utcnow() - timedelta(hours=5, days=6)).date()
-    time_start = datetime.utcnow() - timedelta(hours=5, minutes=15)
-    time_end = datetime.utcnow() - timedelta(hours=5)
+    date_start = (datetime.utcnow() - timedelta(hours=dst, days=6)).date()
+    time_start = datetime.utcnow() - timedelta(hours=dst, minutes=15)
+    time_end = datetime.utcnow() - timedelta(hours=dst)
 
     # get current markers
     marker = {}
@@ -69,11 +72,11 @@ def _query():
     given_date = request.args.get('given_date')
     given_date = datetime.strptime(given_date, "%m/%d/%Y").date()
     
-    if given_date == (datetime.utcnow() - timedelta(hours=5)).date():
+    if given_date == (datetime.utcnow() - timedelta(hours=dst)).date():
         marker = "today"
     elif given_date < datetime(2015, 1, 27).date():
         marker = "Please choose a date after Jan 27, 2015."
-    elif given_date > (datetime.utcnow() - timedelta(hours=5)).date():
+    elif given_date > (datetime.utcnow() - timedelta(hours=dst)).date():
         marker = "No prediction for the future events yet!"
     else:
         print os.getcwd()
